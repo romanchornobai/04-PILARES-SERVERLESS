@@ -1,11 +1,10 @@
-export type EventStatus = 'CONFIRMED' | 'CANCELLED';
+export type ZoneStatus = 'OPEN' | 'FULL' | 'CLOSED';
 
-export interface FestivalEvent {
+export interface Zone {
   id: string;
-  artist: string;
-  space: string;
-  time: string;
-  status: EventStatus;
+  name: string;
+  capacity: number;
+  status: ZoneStatus;
 }
 
-export type EventInput = Omit<FestivalEvent, 'id'>;
+export type ZoneInput = Omit<Zone, 'id'>;
