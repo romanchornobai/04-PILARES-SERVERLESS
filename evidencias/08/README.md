@@ -1,22 +1,22 @@
 # Bloque 08
 
 ## Resultado
-- Qué añadí al proyecto: Configuración de infraestructura en `backend/serverless.yml` parametrizada con `${env:STUDENT_CODE}`, `${env:AWS_REGION}` y `${env:LAMBDA_ROLE_ARN}`, empaquetado del código TypeScript compilado (`dist/`) y despliegue del stack completo en AWS Academy.
-- Ruta o pantalla comprobada: Endpoint en CloudFormation/API Gateway `https://sk4pe4grm0.execute-api.us-east-1.amazonaws.com/dev/events` y logs en CloudWatch con `serverless logs`.
+- Qué añadí al proyecto: Configuré `backend/serverless.yml` con `${env:STUDENT_CODE}`, `${env:AWS_REGION}` y `${env:LAMBDA_ROLE_ARN}` para desplegar en AWS Academy, compilé TypeScript a `dist/` y subí el stack con `serverless deploy`.
+- Ruta o pantalla comprobada: Endpoint generado en API Gateway `https://sk4pe4grm0.execute-api.us-east-1.amazonaws.com/dev/events` y los logs en CloudWatch con `serverless logs`.
 - Estado y respuesta observados:
-  - Despliegue con éxito del stack `festival-control-api-roman-dev` en región `us-east-1`.
-  - Petición `GET /events` devolvió 200 OK con los 2 eventos del catálogo.
-  - Comprobación de logs de Lambda (`listEvents`) mostrando invocación real con tiempo de ejecución (~3ms) en CloudWatch.
+  - Stack `festival-control-api-roman-dev` desplegado en `us-east-1`.
+  - Petición `GET /events` devolvió 200 OK con los 2 eventos de prueba.
+  - Logs en CloudWatch (`listEvents`) mostrando la ejecución real con ~3ms de duración.
 
 ## Comprensión
-- Recorrido del dato, explicado con mis palabras: Primero compilamos los handlers TypeScript a JavaScript en `dist/`. Serverless Framework lee las credenciales del perfil `academy` y empaqueta el código en un zip junto a la plantilla de CloudFormation. CloudFormation crea la API en API Gateway y las Lambdas asignándoles el rol existente del laboratorio (`LabRole`). Al recibir una petición HTTPS, API Gateway enruta el tráfico a la función Lambda correspondiente, ejecutándola en AWS e imprimiendo la traza en CloudWatch Logs.
-- Cambio guiado y resultado: Se comprobó el empaquetado inicial mediante `serverless package` verificando que la plantilla incluía el rol de ejecución autorizado antes de lanzar el `serverless deploy`.
-- Error encontrado y cómo lo resolví: Las credenciales temporales anteriores habían caducado (`ExpiredToken`); se actualizaron en `~/.aws/credentials` bajo el perfil `academy` con el token de la sesión activa y se utilizó el rol `LabRole` existente para evitar errores de permisos IAM.
+- Recorrido del dato, explicado con mis palabras: Primero compilo con `tsc` hacia `dist/`. Serverless Framework toma mis credenciales del perfil `academy`, empaqueta el código en un zip y genera la plantilla de CloudFormation. CloudFormation levanta la API en API Gateway y las Lambdas usando el rol existente del laboratorio (`LabRole`). Cuando hago una petición HTTPS, API Gateway la recibe, despierta la Lambda en AWS y registra la ejecución en CloudWatch Logs.
+- Cambio guiado y resultado: Hice primero `serverless package` para revisar que la plantilla generada tenía el rol y la configuración correcta antes de hacer el deploy definitivo.
+- Error encontrado y cómo lo resolví: Mis credenciales temporales de AWS habían caducado (`ExpiredToken`). Las renové en `~/.aws/credentials` con los datos de mi sesión activa de AWS Academy y usé el rol `LabRole` que ya viene creado en el laboratorio.
 
 ## Evidencias
 - Captura o transcripción breve, sin credenciales:
-  - Stack CloudFormation: `festival-control-api-roman-dev` (región `us-east-1`).
-  - Base URL del API Gateway: `https://sk4pe4grm0.execute-api.us-east-1.amazonaws.com/dev`
-  - Invocación `GET /dev/events` -> 200 OK `[{"id":"EVT-101",...},{"id":"EVT-102",...}]`
-  - CloudWatch Logs: `REPORT RequestId: 5acb58ee-... Duration: 2.95 ms Billed Duration: 144 ms Memory Size: 1024 MB`
-- Limitaciones del ejercicio: Los datos siguen siendo en memoria/simulados dentro de los handlers; el cambio radica en que la infraestructura de ejecución ahora es serverless real en AWS.
+  - Stack en CloudFormation: `festival-control-api-roman-dev` (`us-east-1`).
+  - Base URL: `https://sk4pe4grm0.execute-api.us-east-1.amazonaws.com/dev`
+  - Invocación `GET /dev/events` -> 200 OK con los datos del catálogo.
+  - Log en CloudWatch: `REPORT RequestId: 5acb58ee-... Duration: 2.95 ms Billed Duration: 144 ms`.
+- Limitaciones del ejercicio: Los datos siguen estando en un array en memoria dentro de las Lambdas, no hay DynamoDB todavía. La diferencia es que ahora el código corre en la nube de AWS.
