@@ -7,3 +7,5 @@ export interface FestivalEvent {
   time: string;
   status: EventStatus;
 }
+
+export type EventInput = Omit<FestivalEvent, 'id'>;
