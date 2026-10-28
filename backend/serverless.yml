@@ -24,3 +24,9 @@ functions:
       - http:
           path: events/{id}
           method: get
+  createEvent:
+    handler: dist/createEvent.handler
+    events:
+      - http:
+          path: events
+          method: post
